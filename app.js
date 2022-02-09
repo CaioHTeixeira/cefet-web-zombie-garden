@@ -26,10 +26,11 @@ const app = express()
 const __dirname = new URL('.', import.meta.url).pathname
 
 // configura a pasta que contém as views e o handlebars como templating engine
-app.set('views', `${__dirname}/views`)
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'hbs')
-hbs.registerPartials(`${__dirname}/views/partials`, console.error)
+hbs.registerPartials(path.join(__dirname, '/views/partials'), console.error)
 app.set('json spaces', 2);
+console.log(__dirname)
 
 // possibilita enviar um DELETE via formulário,
 // quando é um POST com ?_method=DELETE na querystring
@@ -58,7 +59,7 @@ app.use('/db/reset', async (req, res) => {
     req.flash('success', 'Banco de dados restaurado ao estado original.')
 
   } catch (error) {
-    req.flash('error', error.friendlyMessage ?? error.message)
+    req.flash('error', error.friendlyMessage)
 
   } finally {
     res.redirect('back')
@@ -90,7 +91,7 @@ if (app.get('env') === 'development') {
 app.use((err, req, res, next) => {
   res.status(err.status || 500)
   res.render('error', {
-    message: err.friendlyMessage ?? err.message,
+    message: err.friendlyMessage,
     error: {}
   })
 })
